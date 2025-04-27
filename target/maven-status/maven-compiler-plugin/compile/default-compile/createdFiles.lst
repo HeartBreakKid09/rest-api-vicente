@@ -1,0 +1,6 @@
+com\vicentefelix\api\controller\ProductController.class
+com\vicentefelix\api\Application.class
+com\vicentefelix\api\exception\ProductNotFoundException.class
+com\vicentefelix\api\model\Product.class
+com\vicentefelix\api\repository\ProductRepository.class
+com\vicentefelix\api\config\SecurityConfig.class
