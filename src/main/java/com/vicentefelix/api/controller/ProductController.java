@@ -2,7 +2,7 @@ package com.vicentefelix.api.controller;
 
 import com.vicentefelix.api.exception.ProductNotFoundException;
 import com.vicentefelix.api.model.Product;
-import com.vicentefelix.api.repository.ProductRepository;
+import com.vicentefelix.api.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,17 +18,17 @@ import java.util.Optional;
 public class ProductController {
 
     @Autowired
-    private ProductRepository productRepository;
+    private ProductService productService;
 
     @GetMapping
     public List<Product> getAll() {
-        return productRepository.findAll();
+        return productService.findAll();
     }
 
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public ResponseEntity<Product> getById(@PathVariable Long id) {
-        Optional<Product> optionalProduct = productRepository.findById(id);
+        Optional<Product> optionalProduct = productService.findById(id);
 
         if (optionalProduct.isEmpty()) {
             throw new ProductNotFoundException("Product with ID " + id + " not found!");
@@ -40,27 +40,18 @@ public class ProductController {
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Product> createProduct(@Valid @RequestBody Product product) {
-        Product newProduct = productRepository.save(product);
+        Product newProduct = productService.save(product);
         return new ResponseEntity<>(newProduct, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Product> updateProduct(@PathVariable Long id, @Valid @RequestBody Product updatedProduct) {
-        Optional<Product> optionalProduct = productRepository.findById(id);
+    public ResponseEntity<Product> updateProduct(@PathVariable Long id, @Valid @RequestBody Product newProduct) {
+        Optional<Product> productToBeUpdated = productService.findById(id);
 
-        if (optionalProduct.isPresent()) {
-            Product existingProduct = optionalProduct.get();
-            existingProduct.setName(updatedProduct.getName());
-            existingProduct.setPrice(updatedProduct.getPrice());
-            existingProduct.setDescription(updatedProduct.getDescription());
-            existingProduct.setCategory(updatedProduct.getCategory());
-            existingProduct.setBrand(updatedProduct.getBrand());
-            existingProduct.setAvailable(updatedProduct.getAvailable());
-            existingProduct.setReleaseDate(updatedProduct.getReleaseDate());
-
-            Product saved = productRepository.save(existingProduct);
-            return ResponseEntity.ok(saved);
+        if (productToBeUpdated.isPresent()) {
+            Product updateProduct = productService.update(productToBeUpdated.get(), newProduct);
+            return ResponseEntity.ok(updateProduct);
         } else {
             return ResponseEntity.notFound().build();
         }
@@ -69,9 +60,9 @@ public class ProductController {
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
-        Optional<Product> optionalProduct = productRepository.findById(id);
+        Optional<Product> optionalProduct = productService.findById(id);
         if (optionalProduct.isPresent()) {
-            productRepository.deleteById(id);
+            productService.delete(id);
             return ResponseEntity.noContent().build();
         } else {
             return ResponseEntity.notFound().build();

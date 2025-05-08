@@ -21,7 +21,10 @@ public class Product {
     private String name;
 
     @NotNull
-    private Double price;
+    private Double costForTheCompany;
+
+    @NotNull
+    private Double costForTheBuyer;
 
     @Size(max = 255, message = "The description of the product cannot be more than 255 characters ")
     private String description;
@@ -46,8 +49,12 @@ public class Product {
         return name;
     }
 
-    public Double getPrice() {
-        return price;
+    public Double getCostForTheCompany() {
+        return costForTheCompany;
+    }
+
+    public Double getCostForTheBuyer() {
+        return costForTheBuyer;
     }
 
     public String getDescription() {
@@ -78,8 +85,12 @@ public class Product {
         this.name = name;
     }
 
-    public void setPrice(Double price) {
-        this.price = price;
+    public void setCostForTheCompany(Double costForTheCompany) {
+        this.costForTheCompany = costForTheCompany;
+    }
+
+    public void setCostForTheBuyer(Double costForTheBuyer) {
+        this.costForTheBuyer = costForTheBuyer;
     }
 
     public void setDescription(String description) {
